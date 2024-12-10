@@ -15,7 +15,6 @@ public class TourService {
     @Autowired
     private TourRepository tourRepository;
 
-
     public void create(Tour tour){
         tourRepository.save(tour);
     }
