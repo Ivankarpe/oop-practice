@@ -1,5 +1,6 @@
-package com.Karpenko.oop;
+package com.Karpenko.oop.models;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,13 +12,24 @@ import jakarta.persistence.Table;
 public class Tour {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String name;
-    private int count;
+    @Column(name = "numinday")
+    private int numInDay;
     private String date;
     private String tourGuy;
     private String place;
 
+    
+    public Tour() {
+    }
+    public Tour(String name, int count, String date, String tourGuy, String place) {
+        this.name = name;
+        this.numInDay = count;
+        this.date = date;
+        this.tourGuy = tourGuy;
+        this.place = place;
+    }
     public void setId(long id) {
         this.id = id;
     }
@@ -28,7 +40,7 @@ public class Tour {
         this.name = name;
     }
     public void setNumber(int count) {
-        this.count = count;
+        this.numInDay = count;
     }
     public void setPlace(String place) {
         this.place = place;
@@ -46,7 +58,7 @@ public class Tour {
         return name;
     }
     public int getNumber() {
-        return count;
+        return numInDay;
     }
     public String getPlace() {
         return place;
