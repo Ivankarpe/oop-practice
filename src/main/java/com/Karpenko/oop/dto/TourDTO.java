@@ -1,5 +1,7 @@
 package com.Karpenko.oop.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public class TourDTO {
@@ -7,6 +9,8 @@ public class TourDTO {
     @NotNull(message = "tour name cant be null")
     private String name;
     @NotNull(message = "tour numInDay cant be null")
+    @Min(value = 1, message = "numInDay must be atleast 1")
+    @Max(value = 7, message = "numInDay must no more that 7")
     private int numInDay;
     @NotNull(message = "tour date cant be null")
     private String date;
@@ -15,7 +19,7 @@ public class TourDTO {
     @NotNull(message = "tour place cant be null")
     private String place;
 
-    
+
     public void setId(Long id) {
         this.id = id;
     }
