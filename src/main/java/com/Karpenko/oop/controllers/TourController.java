@@ -1,5 +1,6 @@
 package com.Karpenko.oop.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.Karpenko.oop.dto.TourDTO;
 import com.Karpenko.oop.models.Tour;
 import com.Karpenko.oop.services.TourService;
+
+import jakarta.validation.Valid;
 
 @Controller
 public class TourController {
@@ -23,35 +27,44 @@ public class TourController {
     TourService tourService;
     
     @GetMapping(value = "/api/tour")
-    private ResponseEntity<List<Tour>> readAll(){
+    private ResponseEntity<List<TourDTO>> readAll(){
         List<Tour> list = tourService.readAll();
 
-        if (list == null || list.isEmpty()) {
+        List<TourDTO> listDto = new ArrayList<TourDTO>();
+
+        for(Tour tour: list){
+            listDto.add(tourService.EntityToDTO(tour));
+        }
+
+        if (listDto == null || listDto.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        return new ResponseEntity<>(listDto, HttpStatus.OK);
     }
 
 
     @GetMapping(value = "/api/tour/{id}")
-    public ResponseEntity<Tour> read(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<TourDTO> read(@PathVariable(name = "id") Long id) {
         final Tour tour = tourService.FindById(id);
         if (tour == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(tour, HttpStatus.OK);
+        TourDTO tourDto = tourService.EntityToDTO(tour);
+        return new ResponseEntity<>(tourDto, HttpStatus.OK);
     }
 
     @PostMapping(value = "/api/tour")
-    public ResponseEntity<?> create(@RequestBody Tour tour) {
+    public ResponseEntity<?> create(@Valid @RequestBody TourDTO tourdto) {
+        Tour tour = tourService.DTOToEntity(tourdto);
         tourService.create(tour);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/api/tour/{id}")
-    public ResponseEntity<?> update(@PathVariable(name = "id") long id, @RequestBody Tour tour) {
+    public ResponseEntity<?> update(@PathVariable(name = "id") long id, @Valid @RequestBody TourDTO tourDto) {
+        Tour tour = tourService.DTOToEntity(tourDto);
         tourService.UpdateById(id, tour);
 
         return new ResponseEntity<>( HttpStatus.OK);
