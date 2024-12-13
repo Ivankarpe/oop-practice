@@ -4,14 +4,14 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-public class TourDTO {
-    private Long id;
+public class TourRequestDTO {
+    
     @NotNull(message = "tour name cant be null")
     private String name;
     @NotNull(message = "tour numInDay cant be null")
     @Min(value = 1, message = "numInDay must be atleast 1")
     @Max(value = 7, message = "numInDay must no more that 7")
-    private int numInDay;
+    private int numinday;
     @NotNull(message = "tour date cant be null")
     private String date;
     @NotNull(message = "tour tourGuy cant be null")
@@ -20,14 +20,12 @@ public class TourDTO {
     private String place;
 
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    
     public void setName(String name) {
         this.name = name;
     }
-    public void setNumInDay(int numInDay) {
-        this.numInDay = numInDay;
+    public void setNuminday(int numinday) {
+        this.numinday = numinday;
     }
     public void setDate(String date) {
         this.date = date;
@@ -38,14 +36,12 @@ public class TourDTO {
     public void setPlace(String place) {
         this.place = place;
     }
-    public Long getId() {
-        return id;
-    }
+   
     public String getName() {
         return name;
     }
-    public int getNumInDay() {
-        return numInDay;
+    public int getNuminday() {
+        return numinday;
     }
     public String getDate() {
         return date;

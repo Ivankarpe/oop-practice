@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        form h2 {
+            margin-top: 0;
+            color: #555;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        input {
+            width: calc(100% - 20px);
+            padding: 8px 10px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script>
+        let token = "";
+        let secondsLeft = 0;
+
+        async function submitLoginForm(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = {
+                username: form.username.value,
+                password: form.password.value
+            };
+
+            const endpoint = '/api/auth';
+            const options = {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            };
+
+            try {
+                const response = await fetch(endpoint, options);
+                if (response.ok) {
+                    alert('Request was successful!');
+                    let body = await response.json();
+                    token = body.token;
+
+                    let decoded = atob(token);
+                    let timeExpr = decoded.split(":")[1];
+
+                    timeExpr = new Date(parseFloat(timeExpr))
+                    secondsLeft = parseInt((timeExpr - Date.now()) / 1000);
+                    console.log(token);
+                    console.log(secondsLeft);
+
+                    let interval = setInterval(() => {
+                        let timer = document.getElementById("timer");
+                        timer.textContent = `${parseInt(secondsLeft / 60)}:${("0" + (secondsLeft % 60)).slice(-2)} left`
+                        let loginStatus = document.getElementById("loginStatus");
+                        loginStatus.textContent = "Authorized";
+                        secondsLeft--;
+                        if (secondsLeft < 0) {
+                            loginStatus.textContent = "Not Authorized";
+                            timer.textContent ="";
+                            clearInterval(interval);
+                        }
+
+
+                    }, 1000);
+
+                    form.reset();
+                } else {
+                    const error = await response.json();
+                    alert(`Error: ${error.message}`);
+                }
+            } catch (err) {
+                alert(`Failed to send request: ${err.message}`);
+            }
+        }
+        async function submitForm(event, method) {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = {
+                id: form.id.value || null,
+                name: form.name.value,
+                numInDay: parseInt(form.numInDay.value),
+                date: form.date.value,
+                tourGuy: form.tourGuy.value,
+                place: form.place.value
+            };
+
+            const endpoint = '/api/tour';
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authToken': `${token}`
+                },
+                body: JSON.stringify(formData)
+            };
+
+            try {
+                const response = await fetch(endpoint, options);
+                if (response.ok) {
+                    alert('Request was successful!');
+                    form.reset();
+                } else {
+                    // Check if response contains JSON
+                    const contentType = response.headers.get('Content-Type');
+                    if (contentType && contentType.includes('application/json')) {
+                        const error = await response.json();
+                        console.log(error.message);
+                    } else {
+                        const errorText = await response.text();
+                        console.error(errorText); // Log raw response
+                    }
+                }
+            } catch (err) {
+                console.log(err.message);
+            }
+
+        }
+
+
+
+    </script>
+
+
+
+</head>
+
+<body>
+    <h1>Tour Management</h1>
+    <h1 id="loginStatus">Not Authorized</h1>
+    <h1 id="timer"></h1>
+    <form id="LoginForm" onsubmit="submitLoginForm(event)">
+        <h2>Login</h2>
+        <label for="Username">ID:</label>
+        <input type="text" id="username" name="id" required>
+
+        <label for="Password">Name:</label>
+        <input type="password" id="password" name="name" required>
+
+        <button type="submit">Login</button>
+    </form>
+    <!-- Form for creating a new tour -->
+    <form id="createForm" onsubmit="submitForm(event, 'POST')">
+        <h2>Create Tour</h2>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="numInDay">Number in Day:</label>
+        <input type="number" id="numInDay" name="numInDay" required>
+
+        <label for="date">Date:</label>
+        <input type="text" id="date" name="date" required>
+
+        <label for="tourGuy">Tour Guide:</label>
+        <input type="text" id="tourGuy" name="tourGuy" required>
+
+        <label for="place">Place:</label>
+        <input type="text" id="place" name="place" required>
+
+        <button type="submit">Create</button>
+    </form>
+
+    <!-- Form for updating an existing tour -->
+    <form id="updateForm" onsubmit="submitForm(event, 'PUT')">
+        <h2>Update Tour</h2>
+        <label for="id">ID:</label>
+        <input type="number" id="id" name="id" required>
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="numInDay">Number in Day:</label>
+        <input type="number" id="numInDay" name="numInDay" required>
+
+        <label for="date">Date:</label>
+        <input type="text" id="date" name="date" required>
+
+        <label for="tourGuy">Tour Guide:</label>
+        <input type="text" id="tourGuy" name="tourGuy" required>
+
+        <label for="place">Place:</label>
+        <input type="text" id="place" name="place" required>
+
+        <button type="submit">Update</button>
+    </form>
+
+</body>
+
+</html>

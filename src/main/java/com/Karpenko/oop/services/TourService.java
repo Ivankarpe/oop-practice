@@ -5,7 +5,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.Karpenko.oop.dto.TourDTO;
+import com.Karpenko.oop.dto.TourRequestDTO;
+import com.Karpenko.oop.dto.TourResponceDTO;
 import com.Karpenko.oop.models.Tour;
 import com.Karpenko.oop.repository.TourRepository;
 
@@ -18,11 +19,11 @@ public class TourService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public TourDTO EntityToDTO(Tour tour){
-        return modelMapper.map(tour, TourDTO.class);
+    public TourResponceDTO EntityToDTO(Tour tour){
+        return modelMapper.map(tour, TourResponceDTO.class);
     }
 
-    public Tour DTOToEntity(TourDTO tourdto){
+    public Tour DTOToEntity(TourRequestDTO tourdto){
         return modelMapper.map(tourdto, Tour.class);
     }
 

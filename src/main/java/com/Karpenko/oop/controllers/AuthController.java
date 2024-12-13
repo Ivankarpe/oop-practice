@@ -26,7 +26,7 @@ public class AuthController {
 
 
         if(adminPassword.equals(password) && adminUsername.equals(username)){
-            Long timeExpr = System.currentTimeMillis() +5*60*1000;
+            Long timeExpr = System.currentTimeMillis() +10*60*1000;
             String token = Base64.getEncoder().encodeToString((username+":" + timeExpr).getBytes());
             return ResponseEntity.ok().body(Map.of("token", token));
         }
