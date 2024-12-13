@@ -66,6 +66,26 @@
         button:hover {
             background-color: #45a049;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .day-header {
+            background-color: #007BFF;
+            color: white;
+            text-align: center;
+            font-size: 1.2em;
+            padding: 10px;
+        }
     </style>
     <script>
         let token = "";
@@ -112,7 +132,7 @@
                         secondsLeft--;
                         if (secondsLeft < 0) {
                             loginStatus.textContent = "Not Authorized";
-                            timer.textContent ="";
+                            timer.textContent = "";
                             clearInterval(interval);
                         }
 
@@ -153,9 +173,12 @@
 
             try {
                 const response = await fetch(endpoint, options);
+                console.log(response);
+
                 if (response.ok) {
                     alert('Request was successful!');
                     form.reset();
+                    loadtable();
                 } else {
                     // Check if response contains JSON
                     const contentType = response.headers.get('Content-Type');
@@ -173,7 +196,77 @@
 
         }
 
+        function loadtable() {
+            fetch('/api/schedule')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const container = document.getElementById('schedule-container');
 
+                // Define the order of days
+                const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+
+                // Sort the data by the defined order
+                const sortedData = dayOrder.map(day => ({
+                    day,
+                    tours: data[day] || []
+                })).filter(entry => entry.tours.length > 0);
+
+                // Iterate over each sorted day in the data
+                sortedData.forEach(({ day, tours }) => {
+                    // Create a header for the day
+                    const dayHeader = document.createElement('div');
+                    dayHeader.className = 'day-header';
+                    dayHeader.textContent = day;
+                    container.appendChild(dayHeader);
+
+                    // Create a table for the day's tours
+                    const table = document.createElement('table');
+                    const thead = document.createElement('thead');
+                    const tbody = document.createElement('tbody');
+
+                    // Define table headers
+                    thead.innerHTML = `
+                        <tr>
+                            <th>ID</th>
+                            <th>Tour Name</th>
+                            <th># in Day</th>
+                            <th>Tour Guide</th>
+                            <th>Place</th>
+                        </tr>
+                    `;
+
+                    // Add rows for each tour
+                    tours.forEach(tour => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${tour.id}</td>
+                            <td>${tour.name}</td>
+                            <td>${tour.numinday}</td>
+                            <td>${tour.tourGuy}</td>
+                            <td>${tour.place}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    // Append table parts to the table
+                    table.appendChild(thead);
+                    table.appendChild(tbody);
+
+                    // Append the table to the container
+                    container.appendChild(table);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching schedule:', error);
+                document.getElementById('schedule-container').textContent = 'Failed to load schedule.';
+            });
+        }
+        loadtable();
 
     </script>
 
@@ -239,7 +332,7 @@
 
         <button type="submit">Update</button>
     </form>
-
+    <div id="schedule-container"></div>
 </body>
 
 </html>
