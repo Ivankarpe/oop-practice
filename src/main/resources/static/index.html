@@ -153,15 +153,17 @@
 
             const form = event.target;
             const formData = {
-                id: form.id.value || null,
                 name: form.name.value,
-                numInDay: parseInt(form.numInDay.value),
+                numinday: parseInt(form.numInDay.value),
                 date: form.date.value,
                 tourGuy: form.tourGuy.value,
                 place: form.place.value
             };
-
-            const endpoint = '/api/tour';
+            
+            let endpoint = '/api/tour';
+            if(method ==="PUT"){
+                endpoint = `/api/tour/${form.id.value}`;
+            }
             const options = {
                 method: method,
                 headers: {
@@ -206,8 +208,7 @@
             })
             .then(data => {
                 const container = document.getElementById('schedule-container');
-
-                // Define the order of days
+                container.innerHTML='';
                 const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
                 // Sort the data by the defined order
