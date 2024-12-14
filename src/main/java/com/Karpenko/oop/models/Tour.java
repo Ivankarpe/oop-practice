@@ -15,7 +15,7 @@ public class Tour {
     private Long id;
     private String name;
     @Column(name = "numinday")
-    private int numInDay;
+    private int numinday;
     private String date;
     private String tourGuy;
     private String place;
@@ -25,7 +25,7 @@ public class Tour {
     }
     public Tour(String name, int count, String date, String tourGuy, String place) {
         this.name = name;
-        this.numInDay = count;
+        this.numinday = count;
         this.date = date;
         this.tourGuy = tourGuy;
         this.place = place;
@@ -39,8 +39,8 @@ public class Tour {
     public void setName(String name) {
         this.name = name;
     }
-    public void setNumber(int count) {
-        this.numInDay = count;
+    public void setNuminday(int numinday) {
+        this.numinday = numinday;
     }
     public void setPlace(String place) {
         this.place = place;
@@ -57,8 +57,8 @@ public class Tour {
     public String getName() {
         return name;
     }
-    public int getNumber() {
-        return numInDay;
+    public int getNuminday() {
+        return numinday;
     }
     public String getPlace() {
         return place;
